@@ -1,6 +1,6 @@
 import { access, mkdir, rename, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import type { Tool } from "@shared/mcp-base.js";
+import type { Tool } from "../../../../shared/mcp-base.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 

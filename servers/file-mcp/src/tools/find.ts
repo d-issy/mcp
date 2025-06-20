@@ -1,4 +1,4 @@
-import type { Tool } from "@shared/mcp-base.js";
+import type { Tool } from "../../../../shared/mcp-base.js";
 import { DirectoryUtils } from "../lib/directory-utils.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 
