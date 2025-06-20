@@ -17,6 +17,7 @@
     "lint": "npm run lint --workspaces && biome lint .",
     "clean": "npm run clean --workspaces",
     "bootstrap": "npm install && npm run build",
+    "postinstall": "npm install --omit=dev --workspace servers/file-mcp",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint:biome": "biome lint .",
@@ -25,7 +26,6 @@
     "check:fix": "biome check --write ."
   },
   "dependencies": {
-    "file-mcp": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.12.3",
     "tsx": "^4.7.0"
   },
