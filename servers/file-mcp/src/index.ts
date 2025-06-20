@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { MCPServer, type Tool } from "./mcp-base.js";
-import { EditTool } from "./tools/edit.js";
-import { MoveTool } from "./tools/move.js";
-import { CopyTool } from "./tools/copy.js";
-import { FindTool } from "./tools/find.js";
-import { GrepTool } from "./tools/grep.js";
-import { ReadTool } from "./tools/read.js";
-import { WriteTool } from "./tools/write.js";
+import { MCPServer, type Tool } from "./mcp-base.ts";
+import { EditTool } from "./tools/edit.ts";
+import { MoveTool } from "./tools/move.ts";
+import { CopyTool } from "./tools/copy.ts";
+import { FindTool } from "./tools/find.ts";
+import { GrepTool } from "./tools/grep.ts";
+import { ReadTool } from "./tools/read.ts";
+import { WriteTool } from "./tools/write.ts";
 
 class FileMCPServer extends MCPServer {
   private findTool: FindTool;
@@ -69,5 +69,12 @@ class FileMCPServer extends MCPServer {
   }
 }
 
-const server = new FileMCPServer();
-server.start().catch(console.error);
+export async function main() {
+  const server = new FileMCPServer();
+  await server.start();
+}
+
+// 直接実行された場合
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch(console.error);
+}

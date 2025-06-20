@@ -1,7 +1,7 @@
-import type { Tool } from "../mcp-base.js";
-import { fileReadTracker } from "../lib/file-read-tracker.js";
-import { FileUtils } from "../lib/file-utils.js";
-import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import type { Tool } from "../mcp-base.ts";
+import { fileReadTracker } from "../lib/file-read-tracker.ts";
+import { FileUtils } from "../lib/file-utils.ts";
+import { ResultFormatter, ToolError } from "../lib/tool-utils.ts";
 
 export class ReadTool {
   getName(): string {
