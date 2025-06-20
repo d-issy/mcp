@@ -1,4 +1,4 @@
-import type { Tool } from "../../../../shared/mcp-base.js";
+import type { Tool } from "../mcp-base.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { FileUtils } from "../lib/file-utils.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";

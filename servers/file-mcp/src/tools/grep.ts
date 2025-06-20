@@ -1,5 +1,5 @@
 import { relative } from "node:path";
-import type { Tool } from "../../../../shared/mcp-base.js";
+import type { Tool } from "../mcp-base.js";
 import { DirectoryUtils } from "../lib/directory-utils.js";
 import { FileUtils } from "../lib/file-utils.js";
 import { ResultFormatter, TOOL_CONSTANTS, ToolError } from "../lib/tool-utils.js";

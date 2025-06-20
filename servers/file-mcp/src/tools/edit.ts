@@ -1,6 +1,6 @@
 import { access, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { Tool } from "../../../../shared/mcp-base.js";
+import type { Tool } from "../mcp-base.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
