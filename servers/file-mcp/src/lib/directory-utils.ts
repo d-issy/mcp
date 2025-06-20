@@ -1,8 +1,8 @@
 import { readdir, stat } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { minimatch } from "minimatch";
-import { FileUtils } from "./file-utils.js";
-import { PathSecurity } from "./path-security.js";
+import { FileUtils } from "./file-utils.ts";
+import { PathSecurity } from "./path-security.ts";
 
 export interface TraversalOptions {
   maxDepth?: number;

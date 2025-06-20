@@ -1,8 +1,8 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import type { Tool } from "../mcp-base.js";
-import { fileReadTracker } from "../lib/file-read-tracker.js";
-import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
+import type { Tool } from "../mcp-base.ts";
+import { fileReadTracker } from "../lib/file-read-tracker.ts";
+import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.ts";
 
 export class WriteTool {
   getName(): string {

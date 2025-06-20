@@ -1,6 +1,6 @@
 import { access, readFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
-import { PathSecurity } from "./path-security.js";
+import { PathSecurity } from "./path-security.ts";
 
 interface FileStats {
   size: number;

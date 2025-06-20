@@ -1,9 +1,9 @@
 import { access, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { Tool } from "../mcp-base.js";
-import { fileReadTracker } from "../lib/file-read-tracker.js";
-import { PathSecurity } from "../lib/path-security.js";
-import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
+import type { Tool } from "../mcp-base.ts";
+import { fileReadTracker } from "../lib/file-read-tracker.ts";
+import { PathSecurity } from "../lib/path-security.ts";
+import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.ts";
 
 interface MatchInfo {
   index: number;

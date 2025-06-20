@@ -1,6 +1,6 @@
-import type { Tool } from "../mcp-base.js";
-import { DirectoryUtils } from "../lib/directory-utils.js";
-import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import type { Tool } from "../mcp-base.ts";
+import { DirectoryUtils } from "../lib/directory-utils.ts";
+import { ResultFormatter, ToolError } from "../lib/tool-utils.ts";
 
 export class FindTool {
   getName(): string {

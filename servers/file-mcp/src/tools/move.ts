@@ -1,8 +1,8 @@
 import { access, mkdir, rename, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import type { Tool } from "../mcp-base.js";
-import { PathSecurity } from "../lib/path-security.js";
-import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import type { Tool } from "../mcp-base.ts";
+import { PathSecurity } from "../lib/path-security.ts";
+import { ResultFormatter, ToolError } from "../lib/tool-utils.ts";
 
 export class MoveTool {
   getName(): string {

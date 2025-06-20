@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { fileReadTracker } from "./file-read-tracker.js";
-import { PathSecurity } from "./path-security.js";
+import { fileReadTracker } from "./file-read-tracker.ts";
+import { PathSecurity } from "./path-security.ts";
 
 /**
  * Common constants used across tools
