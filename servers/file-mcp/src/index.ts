@@ -1,4 +1,4 @@
-import { MCPServer, type Tool } from "@shared/mcp-base.js";
+import { MCPServer, type Tool } from "../../../shared/mcp-base.js";
 import { EditTool } from "./tools/edit.js";
 import { MoveTool } from "./tools/move.js";
 import { CopyTool } from "./tools/copy.js";
