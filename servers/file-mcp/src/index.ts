@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { MCPServer, type Tool } from "./mcp-base.js";
 import { EditTool } from "./tools/edit.js";
 import { MoveTool } from "./tools/move.js";
