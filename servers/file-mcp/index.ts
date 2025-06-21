@@ -89,8 +89,8 @@ class FileMCPServer extends MCPServer {
 
   protected getTools(): Tool[] {
     return [
-      this.findTool.getDefinition(),
       this.readTool.getDefinition(),
+      this.findTool.getDefinition(),
       this.grepTool.getDefinition(),
       this.writeTool.getDefinition(),
       this.editTool.getDefinition(),
@@ -107,24 +107,18 @@ class FileMCPServer extends MCPServer {
       const toolName = name as ToolName;
 
       switch (toolName) {
-        case "find":
-          return await this.findTool.execute(args);
-
         case "read":
           return await this.readTool.execute(args);
-
+        case "find":
+          return await this.findTool.execute(args);
         case "grep":
           return await this.grepTool.execute(args);
-
         case "write":
           return await this.writeTool.execute(args);
-
         case "edit":
           return await this.editTool.execute(args);
-
         case "move":
           return await this.moveTool.execute(args);
-
         case "copy":
           return await this.copyTool.execute(args);
 
@@ -132,13 +126,12 @@ class FileMCPServer extends MCPServer {
           throw ToolError.createValidationError(
             "toolName",
             name,
-            `Unknown tool: ${name}. Available tools: find, read, grep, write, edit, move, copy`
+            `Unknown tool: ${name}. Available tools: ${this.getTools().map(t => t.name).join(', ')}`
           );
       }
     } catch (error) {
       // Return error as proper MCP response instead of throwing
       const errorMessage = error instanceof Error ? error.message : String(error);
-      console.error(`Tool execution error (${name}):`, errorMessage);
       
       return {
         content: [
