@@ -1,6 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { DirectoryUtils } from "../lib/directory-utils.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import { FindToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 export class FindTool {
   getName(): string {
@@ -12,46 +13,48 @@ export class FindTool {
       name: "find",
       description: "Find files and directories with pattern matching and filtering",
       inputSchema: {
-        type: "object",
+        ...zodToJsonSchema(FindToolInputSchema),
         properties: {
+          ...zodToJsonSchema(FindToolInputSchema).properties,
           path: {
-            type: "string",
+            ...zodToJsonSchema(FindToolInputSchema).properties.path,
             description: "Directory path to search (required)",
           },
           depth: {
-            type: "number",
+            ...zodToJsonSchema(FindToolInputSchema).properties.depth,
             description: "Maximum depth to recurse (default: 0 = unlimited)",
-            default: 0,
           },
           includeIgnored: {
-            type: "boolean",
+            ...zodToJsonSchema(FindToolInputSchema).properties.includeIgnored,
             description: "Include files ignored by .gitignore (default: false)",
-            default: false,
           },
           pattern: {
-            type: "string",
-            description:
-              "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
+            ...zodToJsonSchema(FindToolInputSchema).properties.pattern,
+            description: "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
           },
         },
-        required: ["path"],
       },
     };
   }
 
   async execute(args: any): Promise<any> {
     try {
-      const { path: targetPath, depth = 0, includeIgnored = false, pattern: filterPath } = args;
+      // Validate and parse input using Zod schema
+      const validatedArgs = FindToolInputSchema.parse(args);
+      const { path: targetPath, depth, includeIgnored, pattern: filterPath } = validatedArgs;
 
       const basePath = targetPath || ".";
 
       // Use DirectoryUtils for file finding with all the same features
-      const results = await DirectoryUtils.findFiles(basePath, filterPath, {
-        maxDepth: depth === 0 ? undefined : depth,
+      const options: any = {
         includeIgnored,
         includeFiles: true,
         includeDirectories: true,
-      });
+      };
+      if (depth > 0) {
+        options.maxDepth = depth;
+      }
+      const results = await DirectoryUtils.findFiles(basePath, filterPath, options);
 
       // Format results as relative paths (maintaining original behavior)
       const relativePaths = results.map((result) => {
@@ -61,6 +64,14 @@ export class FindTool {
 
       return ResultFormatter.createResponse(relativePaths.join("\n"));
     } catch (error) {
+      // Handle Zod validation errors
+      if (error instanceof Error && error.name === 'ZodError') {
+        throw ToolError.createValidationError(
+          "input",
+          args,
+          `Invalid input: ${error.message}`
+        );
+      }
       throw ToolError.wrapError("Find operation", error);
     }
   }

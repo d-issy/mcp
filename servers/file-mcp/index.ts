@@ -13,6 +13,12 @@ import { FindTool } from "./tools/find.js";
 import { GrepTool } from "./tools/grep.js";
 import { ReadTool } from "./tools/read.js";
 import { WriteTool } from "./tools/write.js";
+import { ToolError } from "./lib/tool-utils.js";
+
+
+
+// Valid tool names for type safety
+type ToolName = "find" | "read" | "grep" | "write" | "edit" | "move" | "copy";
 
 abstract class MCPServer {
   protected server: Server;
@@ -51,7 +57,7 @@ abstract class MCPServer {
 
   protected abstract getTools(): Tool[];
 
-  protected abstract handleToolCall(name: string, args: any): Promise<any>;
+  protected abstract handleToolCall(name: string, args: unknown): Promise<{ content: Array<{ type: string; text: string }> }>;
 
   async start(): Promise<void> {
     const transport = new StdioServerTransport();
@@ -92,31 +98,45 @@ class FileMCPServer extends MCPServer {
     ];
   }
 
-  protected async handleToolCall(name: string, args: any): Promise<any> {
-    switch (name) {
-      case "find":
-        return await this.findTool.execute(args);
+  protected async handleToolCall(name: string, args: unknown): Promise<{ content: Array<{ type: string; text: string }> }> {
+    try {
+      const toolName = name as ToolName;
+      
+      switch (toolName) {
+        case "find":
+          return await this.findTool.execute(args);
 
-      case "read":
-        return await this.readTool.execute(args);
+        case "read":
+          return await this.readTool.execute(args);
 
-      case "grep":
-        return await this.grepTool.execute(args);
+        case "grep":
+          return await this.grepTool.execute(args);
 
-      case "write":
-        return await this.writeTool.execute(args);
+        case "write":
+          return await this.writeTool.execute(args);
 
-      case "edit":
-        return await this.editTool.execute(args);
+        case "edit":
+          return await this.editTool.execute(args);
 
-      case "move":
-        return await this.moveTool.execute(args);
+        case "move":
+          return await this.moveTool.execute(args);
 
-      case "copy":
-        return await this.copyTool.execute(args);
+        case "copy":
+          return await this.copyTool.execute(args);
 
-      default:
-        throw new Error(`Unknown tool: ${name}`);
+        default:
+          throw ToolError.createValidationError(
+            "toolName",
+            name,
+            `Unknown tool: ${name}. Available tools: find, read, grep, write, edit, move, copy`
+          );
+      }
+    } catch (error) {
+      // Ensure all errors are properly formatted as ToolResponse
+      if (error instanceof Error) {
+        throw error; // Let MCP SDK handle the error response
+      }
+      throw new Error(`Tool execution failed: ${String(error)}`);
     }
   }
 }

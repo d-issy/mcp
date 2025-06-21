@@ -1,8 +1,9 @@
 import { access, mkdir, rename, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import { type Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import { MoveToolInputSchema } from "../lib/schemas.js";
 
 export class MoveTool {
   getName(): string {
@@ -36,9 +37,10 @@ export class MoveTool {
   }
 
   async execute(args: any): Promise<any> {
-    const { from: fromPath, to: toPath, overwrite = false } = args;
-
     try {
+      // Validate and parse input using Zod schema
+      const validatedArgs = MoveToolInputSchema.parse(args);
+      const { from: fromPath, to: toPath, overwrite } = validatedArgs;
       // Resolve absolute paths
       const fromResolved = resolve(fromPath);
       const toResolved = resolve(toPath);
@@ -92,6 +94,14 @@ export class MoveTool {
         : `✅ Successfully moved: ${fromPath} → ${toPath}`;
       return ResultFormatter.createResponse(message);
     } catch (error: any) {
+      // Handle Zod validation errors
+      if (error instanceof Error && error.name === 'ZodError') {
+        throw ToolError.createValidationError(
+          "input",
+          args,
+          `Invalid input: ${error.message}`
+        );
+      }
       throw ToolError.wrapError("Move operation", error);
     }
   }

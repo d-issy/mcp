@@ -2,6 +2,7 @@ import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { FileUtils } from "../lib/file-utils.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
+import { ReadToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 export class ReadTool {
   getName(): string {
@@ -13,51 +14,45 @@ export class ReadTool {
       name: "read",
       description: "Read file contents with safety checks and optional line range",
       inputSchema: {
-        type: "object",
+        ...zodToJsonSchema(ReadToolInputSchema),
         properties: {
+          ...zodToJsonSchema(ReadToolInputSchema).properties,
           path: {
-            type: "string",
+            ...zodToJsonSchema(ReadToolInputSchema).properties.path,
             description: "File path to read",
           },
           startLine: {
-            type: "number",
+            ...zodToJsonSchema(ReadToolInputSchema).properties.startLine,
             description: "Start line number (1-based, default: 1)",
-            default: 1,
           },
           endLine: {
-            type: "number",
+            ...zodToJsonSchema(ReadToolInputSchema).properties.endLine,
             description: "End line number (1-based, optional)",
           },
           maxLines: {
-            type: "number",
+            ...zodToJsonSchema(ReadToolInputSchema).properties.maxLines,
             description: "Maximum number of lines to read (default: 20)",
-            default: 20,
           },
         },
-        required: ["path"],
       },
     };
   }
 
   async execute(args: any): Promise<any> {
     try {
-      const { path: filePath, startLine = 1, endLine, maxLines = 20 } = args;
-
-      // Validate line range
-      if (endLine && startLine > endLine) {
-        throw ToolError.createValidationError(
-          "lineRange",
-          { startLine, endLine },
-          `Invalid line range: startLine (${startLine}) cannot be greater than endLine (${endLine})`
-        );
-      }
+      // Validate and parse input using Zod schema
+      const validatedArgs = ReadToolInputSchema.parse(args);
+      const { path: filePath, startLine, endLine, maxLines } = validatedArgs;
 
       // Use FileUtils for safe file reading with line range support
-      const { content: selectedContent, totalLines } = await FileUtils.readFileLines(filePath, {
+      const options: any = {
         startLine,
-        endLine,
         maxLines,
-      });
+      };
+      if (endLine !== undefined) {
+        options.endLine = endLine;
+      }
+      const { content: selectedContent, totalLines } = await FileUtils.readFileLines(filePath, options);
 
       // Calculate actual range (for display purposes)
       const actualStartLine = Math.max(1, startLine);
@@ -109,6 +104,14 @@ export class ReadTool {
 
       return ResultFormatter.createResponse(formattedLines);
     } catch (error) {
+      // Handle Zod validation errors
+      if (error instanceof Error && error.name === 'ZodError') {
+        throw ToolError.createValidationError(
+          "input",
+          args,
+          `Invalid input: ${error.message}`
+        );
+      }
       throw ToolError.wrapError("Read operation", error);
     }
   }

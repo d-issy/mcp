@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { ZodError, type ZodSchema } from "zod";
 import { fileReadTracker } from "./file-read-tracker.js";
 import { PathSecurity } from "./path-security.js";
 
@@ -12,9 +13,62 @@ export const TOOL_CONSTANTS = {
 } as const;
 
 /**
+ * Type-safe response interface for tools
+ */
+export interface ToolResponse {
+  content: Array<{ type: "text"; text: string }>;
+}
+
+/**
  * Common validation functions for tools
  */
 export class ToolValidation {
+  /**
+   * Validates input using Zod schema with enhanced error messages
+   */
+  static validateWithSchema<T>(schema: ZodSchema<T>, data: unknown, context?: string): T {
+    try {
+      return schema.parse(data);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const contextStr = context ? `${context}: ` : "";
+        const issues = error.issues.map(issue => {
+          const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+          return `${issue.message}${path}`;
+        }).join(", ");
+        throw ToolError.createValidationError(
+          "input",
+          data,
+          `${contextStr}${issues}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Safely validates input with Zod schema, returning result object
+   */
+  static safeValidateWithSchema<T>(schema: ZodSchema<T>, data: unknown): {
+    success: boolean;
+    data?: T;
+    error?: string;
+  } {
+    try {
+      const result = schema.parse(data);
+      return { success: true, data: result };
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const issues = error.issues.map(issue => {
+          const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+          return `${issue.message}${path}`;
+        }).join(", ");
+        return { success: false, error: issues };
+      }
+      return { success: false, error: String(error) };
+    }
+  }
+
   /**
    * Validates file security and marks as read
    */
@@ -126,5 +180,41 @@ export class ToolError {
    */
   static createValidationError(field: string, value: any, requirement: string): Error {
     return new Error(`Invalid ${field}: ${value}. ${requirement}`);
+  }
+
+  /**
+   * Handles Zod validation errors with enhanced formatting
+   */
+  static handleZodError(error: ZodError, context?: string): Error {
+    const contextStr = context ? `${context}: ` : "";
+    const issues = error.issues.map(issue => {
+      const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+      return `${issue.message}${path}`;
+    }).join(", ");
+    
+    return new Error(`${contextStr}Validation failed: ${issues}`);
+  }
+
+  /**
+   * Checks if an error is a Zod validation error
+   */
+  static isZodError(error: unknown): error is ZodError {
+    return error instanceof ZodError;
+  }
+
+  /**
+   * Creates a standardized error response for tools
+   */
+  static createErrorResponse(error: unknown, operation?: string): Error {
+    if (ToolError.isZodError(error)) {
+      return ToolError.handleZodError(error, operation);
+    }
+    
+    if (error instanceof Error) {
+      return operation ? ToolError.wrapError(operation, error) : error;
+    }
+    
+    const message = String(error);
+    return new Error(operation ? `${operation} failed: ${message}` : message);
   }
 }
