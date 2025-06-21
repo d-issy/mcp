@@ -2,8 +2,8 @@ import { access, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
+import { WriteToolInputSchema } from "../lib/schemas.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
-import { WriteToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 export class WriteTool {
   getName(): string {

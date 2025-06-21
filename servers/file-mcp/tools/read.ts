@@ -1,8 +1,8 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { FileUtils } from "../lib/file-utils.js";
+import { ReadToolInputSchema } from "../lib/schemas.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
-import { ReadToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 export class ReadTool {
   getName(): string {

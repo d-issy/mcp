@@ -3,8 +3,8 @@ import { resolve } from "node:path";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { PathSecurity } from "../lib/path-security.js";
+import { EditToolInputSchema } from "../lib/schemas.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
-import { EditToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 interface MatchInfo {
   index: number;
