@@ -136,11 +136,18 @@ class FileMCPServer extends MCPServer {
           );
       }
     } catch (error) {
-      // Ensure all errors are properly formatted as ToolResponse
-      if (error instanceof Error) {
-        throw error; // Let MCP SDK handle the error response
-      }
-      throw new Error(`Tool execution failed: ${String(error)}`);
+      // Return error as proper MCP response instead of throwing
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Tool execution error (${name}):`, errorMessage);
+      
+      return {
+        content: [
+          {
+            type: "text",
+            text: `❌ Error: ${errorMessage}`
+          }
+        ]
+      };
     }
   }
 }
