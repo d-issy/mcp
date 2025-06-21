@@ -7,8 +7,8 @@
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,
-    "outDir": "./dist",
-    "rootDir": "./",
+    "outDir": "./dist/servers/file-mcp",
+    "rootDir": "./servers/file-mcp",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -26,11 +26,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["./shared/*"]
-    }
+    "baseUrl": "."
   },
-  "include": ["servers/**/*", "shared/**/*", "scripts/**/*"],
+  "include": ["servers/file-mcp/**/*"],
   "exclude": ["node_modules", "dist", "build", "**/node_modules", "**/dist", "**/build"]
 }
