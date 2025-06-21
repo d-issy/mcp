@@ -1,0 +1,47 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Please
+        uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      # Optional: Run tests and build when release PR is created
+      - name: Checkout Repository
+        if: ${{ steps.release.outputs.releases_created }}
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        if: ${{ steps.release.outputs.releases_created }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+          
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm ci
+        
+      - name: Build
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm run build
+        
+      - name: Run tests and checks
+        if: ${{ steps.release.outputs.releases_created }}
+        run: |
+          npm run check
+          npm run lint
