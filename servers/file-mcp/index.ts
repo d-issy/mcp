@@ -15,8 +15,6 @@ import { ReadTool } from "./tools/read.js";
 import { WriteTool } from "./tools/write.js";
 import { ToolError } from "./lib/tool-utils.js";
 
-
-
 // Valid tool names for type safety
 type ToolName = "find" | "read" | "grep" | "write" | "edit" | "move" | "copy";
 
@@ -57,7 +55,10 @@ abstract class MCPServer {
 
   protected abstract getTools(): Tool[];
 
-  protected abstract handleToolCall(name: string, args: unknown): Promise<{ content: Array<{ type: string; text: string }> }>;
+  protected abstract handleToolCall(
+    name: string,
+    args: unknown
+  ): Promise<{ content: Array<{ type: string; text: string }> }>;
 
   async start(): Promise<void> {
     const transport = new StdioServerTransport();
@@ -98,10 +99,13 @@ class FileMCPServer extends MCPServer {
     ];
   }
 
-  protected async handleToolCall(name: string, args: unknown): Promise<{ content: Array<{ type: string; text: string }> }> {
+  protected async handleToolCall(
+    name: string,
+    args: unknown
+  ): Promise<{ content: Array<{ type: string; text: string }> }> {
     try {
       const toolName = name as ToolName;
-      
+
       switch (toolName) {
         case "find":
           return await this.findTool.execute(args);

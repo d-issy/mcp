@@ -30,7 +30,8 @@ export class FindTool {
           },
           pattern: {
             ...zodToJsonSchema(FindToolInputSchema).properties.pattern,
-            description: "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
+            description:
+              "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
           },
         },
       },
@@ -65,12 +66,8 @@ export class FindTool {
       return ResultFormatter.createResponse(relativePaths.join("\n"));
     } catch (error) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       throw ToolError.wrapError("Find operation", error);
     }

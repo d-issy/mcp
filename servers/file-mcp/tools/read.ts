@@ -52,7 +52,10 @@ export class ReadTool {
       if (endLine !== undefined) {
         options.endLine = endLine;
       }
-      const { content: selectedContent, totalLines } = await FileUtils.readFileLines(filePath, options);
+      const { content: selectedContent, totalLines } = await FileUtils.readFileLines(
+        filePath,
+        options
+      );
 
       // Calculate actual range (for display purposes)
       const actualStartLine = Math.max(1, startLine);
@@ -105,12 +108,8 @@ export class ReadTool {
       return ResultFormatter.createResponse(formattedLines);
     } catch (error) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       throw ToolError.wrapError("Read operation", error);
     }

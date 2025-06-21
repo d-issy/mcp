@@ -93,12 +93,8 @@ export class EditTool {
       return await this.handleBatchEdit(filePath, edits);
     } catch (error) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       throw error;
     }

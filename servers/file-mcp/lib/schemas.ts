@@ -20,18 +20,17 @@ export const FileContentSchema = z.string();
 export const BooleanFlagSchema = z.boolean().default(false);
 
 // Read tool input schema
-export const ReadToolInputSchema = z.object({
-  path: FilePathSchema,
-  startLine: LineNumberSchema.default(1),
-  endLine: OptionalLineNumberSchema,
-  maxLines: z.number().int().min(1).default(20),
-}).refine(
-  (data) => !data.endLine || data.startLine <= data.endLine,
-  {
+export const ReadToolInputSchema = z
+  .object({
+    path: FilePathSchema,
+    startLine: LineNumberSchema.default(1),
+    endLine: OptionalLineNumberSchema,
+    maxLines: z.number().int().min(1).default(20),
+  })
+  .refine((data) => !data.endLine || data.startLine <= data.endLine, {
     message: "Start line cannot be greater than end line",
     path: ["startLine"],
-  }
-);
+  });
 
 // Write tool input schema
 export const WriteToolInputSchema = z.object({
@@ -41,22 +40,24 @@ export const WriteToolInputSchema = z.object({
 });
 
 // Edit operation schemas
-export const EditOperationSchema = z.object({
-  oldString: z.string().optional(),
-  newString: z.string().optional(),
-  lineNumber: OptionalLineNumberSchema,
-  content: z.string().optional(),
-  replaceAll: BooleanFlagSchema,
-}).refine(
-  (data) => {
-    const hasReplace = data.oldString !== undefined && data.newString !== undefined;
-    const hasInsert = data.lineNumber !== undefined && data.content !== undefined;
-    return hasReplace !== hasInsert; // XOR: exactly one must be true
-  },
-  {
-    message: "Must specify either (oldString+newString) or (lineNumber+content), but not both",
-  }
-);
+export const EditOperationSchema = z
+  .object({
+    oldString: z.string().optional(),
+    newString: z.string().optional(),
+    lineNumber: OptionalLineNumberSchema,
+    content: z.string().optional(),
+    replaceAll: BooleanFlagSchema,
+  })
+  .refine(
+    (data) => {
+      const hasReplace = data.oldString !== undefined && data.newString !== undefined;
+      const hasInsert = data.lineNumber !== undefined && data.content !== undefined;
+      return hasReplace !== hasInsert; // XOR: exactly one must be true
+    },
+    {
+      message: "Must specify either (oldString+newString) or (lineNumber+content), but not both",
+    }
+  );
 
 // Edit tool input schema
 export const EditToolInputSchema = z.object({
@@ -121,7 +122,7 @@ export function zodToJsonSchema(schema: z.ZodTypeAny): any {
 
     for (const [key, value] of Object.entries(shape)) {
       properties[key] = zodToJsonSchema(value as z.ZodTypeAny);
-      
+
       // Check if field is required (not optional and no default)
       if (!(value as any).isOptional() && !(value as any)._def.defaultValue) {
         required.push(key);

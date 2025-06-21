@@ -85,12 +85,8 @@ export class WriteTool {
       return ResultFormatter.createResponse(resultDisplay);
     } catch (error: any) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       throw ToolError.wrapError("Write operation", error);
     }

@@ -32,15 +32,13 @@ export class ToolValidation {
     } catch (error) {
       if (error instanceof ZodError) {
         const contextStr = context ? `${context}: ` : "";
-        const issues = error.issues.map(issue => {
-          const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
-          return `${issue.message}${path}`;
-        }).join(", ");
-        throw ToolError.createValidationError(
-          "input",
-          data,
-          `${contextStr}${issues}`
-        );
+        const issues = error.issues
+          .map((issue) => {
+            const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+            return `${issue.message}${path}`;
+          })
+          .join(", ");
+        throw ToolError.createValidationError("input", data, `${contextStr}${issues}`);
       }
       throw error;
     }
@@ -49,7 +47,10 @@ export class ToolValidation {
   /**
    * Safely validates input with Zod schema, returning result object
    */
-  static safeValidateWithSchema<T>(schema: ZodSchema<T>, data: unknown): {
+  static safeValidateWithSchema<T>(
+    schema: ZodSchema<T>,
+    data: unknown
+  ): {
     success: boolean;
     data?: T;
     error?: string;
@@ -59,10 +60,12 @@ export class ToolValidation {
       return { success: true, data: result };
     } catch (error) {
       if (error instanceof ZodError) {
-        const issues = error.issues.map(issue => {
-          const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
-          return `${issue.message}${path}`;
-        }).join(", ");
+        const issues = error.issues
+          .map((issue) => {
+            const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+            return `${issue.message}${path}`;
+          })
+          .join(", ");
         return { success: false, error: issues };
       }
       return { success: false, error: String(error) };
@@ -187,11 +190,13 @@ export class ToolError {
    */
   static handleZodError(error: ZodError, context?: string): Error {
     const contextStr = context ? `${context}: ` : "";
-    const issues = error.issues.map(issue => {
-      const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
-      return `${issue.message}${path}`;
-    }).join(", ");
-    
+    const issues = error.issues
+      .map((issue) => {
+        const path = issue.path.length > 0 ? ` at ${issue.path.join(".")}` : "";
+        return `${issue.message}${path}`;
+      })
+      .join(", ");
+
     return new Error(`${contextStr}Validation failed: ${issues}`);
   }
 
@@ -209,11 +214,11 @@ export class ToolError {
     if (ToolError.isZodError(error)) {
       return ToolError.handleZodError(error, operation);
     }
-    
+
     if (error instanceof Error) {
       return operation ? ToolError.wrapError(operation, error) : error;
     }
-    
+
     const message = String(error);
     return new Error(operation ? `${operation} failed: ${message}` : message);
   }

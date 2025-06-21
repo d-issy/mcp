@@ -95,12 +95,8 @@ export class MoveTool {
       return ResultFormatter.createResponse(message);
     } catch (error: any) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       throw ToolError.wrapError("Move operation", error);
     }

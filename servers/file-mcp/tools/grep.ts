@@ -70,16 +70,8 @@ export class GrepTool {
     try {
       // Validate and parse input using Zod schema
       const validatedArgs = GrepToolInputSchema.parse(args);
-      const {
-        pattern,
-        path,
-        include,
-        beforeContext,
-        afterContext,
-        context,
-        multiline,
-        maxCount,
-      } = validatedArgs;
+      const { pattern, path, include, beforeContext, afterContext, context, multiline, maxCount } =
+        validatedArgs;
 
       // Reset output length for each execution
       this.outputLength = 0;
@@ -210,12 +202,8 @@ export class GrepTool {
       return ResultFormatter.createResponse(result);
     } catch (error: any) {
       // Handle Zod validation errors
-      if (error instanceof Error && error.name === 'ZodError') {
-        throw ToolError.createValidationError(
-          "input",
-          args,
-          `Invalid input: ${error.message}`
-        );
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
       }
       // If it's already our friendly regex error, don't wrap it
       if (error.message.includes("Regex pattern error:")) {
