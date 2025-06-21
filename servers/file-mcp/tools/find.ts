@@ -22,7 +22,8 @@ export class FindTool {
           },
           pattern: {
             type: "string",
-            description: "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
+            description:
+              "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
           },
           depth: {
             type: "number",

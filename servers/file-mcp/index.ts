@@ -126,20 +126,22 @@ class FileMCPServer extends MCPServer {
           throw ToolError.createValidationError(
             "toolName",
             name,
-            `Unknown tool: ${name}. Available tools: ${this.getTools().map(t => t.name).join(', ')}`
+            `Unknown tool: ${name}. Available tools: ${this.getTools()
+              .map((t) => t.name)
+              .join(", ")}`
           );
       }
     } catch (error) {
       // Return error as proper MCP response instead of throwing
       const errorMessage = error instanceof Error ? error.message : String(error);
-      
+
       return {
         content: [
           {
             type: "text",
-            text: `❌ Error: ${errorMessage}`
-          }
-        ]
+            text: `❌ Error: ${errorMessage}`,
+          },
+        ],
       };
     }
   }
