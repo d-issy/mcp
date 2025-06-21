@@ -1,6 +1,6 @@
 import { access, mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import type { Tool } from "@shared/mcp-base.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
 

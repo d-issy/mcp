@@ -1,6 +1,6 @@
 import { access, mkdir, rename, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import type { Tool } from "@shared/mcp-base.js";
+import { type Tool } from "@modelcontextprotocol/sdk/types.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 
@@ -47,14 +47,18 @@ export class MoveTool {
       this.validateCurrentDirectoryBounds(fromResolved, toResolved);
 
       if (PathSecurity.isDangerousFile(fromPath) || PathSecurity.isDangerousFile(toPath)) {
-        throw new Error(`Security protection: Cannot operate on dangerous files (${fromPath} → ${toPath})`);
+        throw new Error(
+          `Security protection: Cannot operate on dangerous files (${fromPath} → ${toPath})`
+        );
       }
 
       if (
         (await PathSecurity.isIgnoredByGit(fromResolved)) ||
         (await PathSecurity.isIgnoredByGit(toResolved))
       ) {
-        throw new Error(`gitignore protection: Cannot operate on ignored files (${fromPath} → ${toPath})`);
+        throw new Error(
+          `gitignore protection: Cannot operate on ignored files (${fromPath} → ${toPath})`
+        );
       }
 
       // Check if source exists
