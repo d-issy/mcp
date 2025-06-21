@@ -4,9 +4,6 @@
   "description": "A project for managing multiple MCP servers",
   "type": "module",
   "private": false,
-  "bin": {
-    "file-mcp": "./servers/file-mcp/dist/index.js"
-  },
   "workspaces": [
     "servers/*"
   ],
