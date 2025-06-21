@@ -1,4 +1,11 @@
-import { MCPServer, type Tool } from "@shared/mcp-base.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  type Tool,
+  type CallToolRequest,
+} from "@modelcontextprotocol/sdk/types.js";
 import { EditTool } from "./tools/edit.js";
 import { MoveTool } from "./tools/move.js";
 import { CopyTool } from "./tools/copy.js";
@@ -6,6 +13,52 @@ import { FindTool } from "./tools/find.js";
 import { GrepTool } from "./tools/grep.js";
 import { ReadTool } from "./tools/read.js";
 import { WriteTool } from "./tools/write.js";
+
+abstract class MCPServer {
+  protected server: Server;
+  protected name: string;
+  protected version: string;
+
+  constructor(name: string, version: string = "1.0.0") {
+    this.name = name;
+    this.version = version;
+    this.server = new Server(
+      {
+        name,
+        version,
+      },
+      {
+        capabilities: {
+          tools: {},
+        },
+      }
+    );
+
+    this.setupHandlers();
+  }
+
+  private setupHandlers(): void {
+    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+      return {
+        tools: this.getTools(),
+      };
+    });
+
+    this.server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
+      return await this.handleToolCall(request.params.name, request.params.arguments);
+    });
+  }
+
+  protected abstract getTools(): Tool[];
+
+  protected abstract handleToolCall(name: string, args: any): Promise<any>;
+
+  async start(): Promise<void> {
+    const transport = new StdioServerTransport();
+    await this.server.connect(transport);
+    console.error(`${this.name} MCP server running on stdio`);
+  }
+}
 
 class FileMCPServer extends MCPServer {
   private findTool: FindTool;

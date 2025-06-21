@@ -1,18 +1,18 @@
-import { access, mkdir, rename, stat } from "node:fs/promises";
+import { access, copyFile, mkdir, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
-import type { Tool } from "@shared/mcp-base.js";
+import { type Tool } from "@modelcontextprotocol/sdk/types.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 
-export class MoveTool {
+export class CopyTool {
   getName(): string {
-    return "move";
+    return "copy";
   }
 
   getDefinition(): Tool {
     return {
-      name: "move",
-      description: "Move files with safety checks and current directory restrictions",
+      name: "copy",
+      description: "Copy files with metadata preservation and safety checks",
       inputSchema: {
         type: "object",
         properties: {
@@ -47,14 +47,18 @@ export class MoveTool {
       this.validateCurrentDirectoryBounds(fromResolved, toResolved);
 
       if (PathSecurity.isDangerousFile(fromPath) || PathSecurity.isDangerousFile(toPath)) {
-        throw new Error(`Security protection: Cannot operate on dangerous files (${fromPath} → ${toPath})`);
+        throw new Error(
+          `Security protection: Cannot operate on dangerous files (${fromPath} → ${toPath})`
+        );
       }
 
       if (
         (await PathSecurity.isIgnoredByGit(fromResolved)) ||
         (await PathSecurity.isIgnoredByGit(toResolved))
       ) {
-        throw new Error(`gitignore protection: Cannot operate on ignored files (${fromPath} → ${toPath})`);
+        throw new Error(
+          `gitignore protection: Cannot operate on ignored files (${fromPath} → ${toPath})`
+        );
       }
 
       // Check if source exists
@@ -73,22 +77,22 @@ export class MoveTool {
         const destSize = Math.round((destStats.size / 1024) * 100) / 100;
 
         throw new Error(
-          `Destination already exists: ${toPath} (${destSize}KB, modified ${destStats.mtime.toISOString().split("T")[0]}). Move operation would overwrite this file. Use overwrite=true to force overwrite or choose a different destination path.`
+          `Destination already exists: ${toPath} (${destSize}KB, modified ${destStats.mtime.toISOString().split("T")[0]}). Copy operation would overwrite this file. Use overwrite=true to force overwrite or choose a different destination path.`
         );
       }
 
       // Ensure destination directory exists
       await this.ensureDestinationDirectory(toResolved);
 
-      // Perform move operation
-      await this.performMove(fromResolved, toResolved);
+      // Perform copy operation
+      await this.performCopy(fromResolved, toResolved);
 
       const message = destinationExists
-        ? `✅ Successfully moved (overwrote existing): ${fromPath} → ${toPath}`
-        : `✅ Successfully moved: ${fromPath} → ${toPath}`;
+        ? `✅ Successfully copied (overwrote existing): ${fromPath} → ${toPath}`
+        : `✅ Successfully copied: ${fromPath} → ${toPath}`;
       return ResultFormatter.createResponse(message);
     } catch (error: any) {
-      throw ToolError.wrapError("Move operation", error);
+      throw ToolError.wrapError("Copy operation", error);
     }
   }
 
@@ -122,18 +126,20 @@ export class MoveTool {
     }
   }
 
-  private async performMove(fromPath: string, toPath: string): Promise<void> {
-    try {
-      await rename(fromPath, toPath);
-    } catch (error: any) {
-      // Handle cross-device move by copy + delete
-      if (error.code === "EXDEV") {
-        const { copyFile, unlink } = await import("node:fs/promises");
-        await copyFile(fromPath, toPath);
-        await unlink(fromPath);
-      } else {
-        throw error;
-      }
+  private async performCopy(fromPath: string, toPath: string): Promise<void> {
+    const fromStats = await stat(fromPath);
+
+    if (fromStats.isDirectory()) {
+      throw new Error(
+        "Directory copying not yet implemented. Use copy tool for single files only."
+      );
     }
+
+    await copyFile(fromPath, toPath);
+
+    // Preserve timestamps and permissions (metadata preservation)
+    const { utimes, chmod } = await import("node:fs/promises");
+    await utimes(toPath, fromStats.atime, fromStats.mtime);
+    await chmod(toPath, fromStats.mode);
   }
 }
