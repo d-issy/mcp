@@ -42,15 +42,14 @@ export class EditTool {
       name: "edit",
       description: "Edit file contents with batch operations (requires prior read)",
       inputSchema: {
-        ...zodToJsonSchema(EditToolInputSchema),
+        type: "object",
         properties: {
-          ...zodToJsonSchema(EditToolInputSchema).properties,
           path: {
-            ...zodToJsonSchema(EditToolInputSchema).properties.path,
+            type: "string",
             description: "File path to edit",
           },
           edits: {
-            ...zodToJsonSchema(EditToolInputSchema).properties.edits,
+            type: "array",
             description: "Array of edit operations to perform in sequence",
             items: {
               type: "object",
@@ -80,6 +79,7 @@ export class EditTool {
             },
           },
         },
+        required: ["path", "edits"],
       },
     };
   }

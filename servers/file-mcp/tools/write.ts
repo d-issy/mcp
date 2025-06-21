@@ -15,22 +15,23 @@ export class WriteTool {
       name: "write",
       description: "Write complete file contents (create new files or overwrite existing files)",
       inputSchema: {
-        ...zodToJsonSchema(WriteToolInputSchema),
+        type: "object",
         properties: {
-          ...zodToJsonSchema(WriteToolInputSchema).properties,
           path: {
-            ...zodToJsonSchema(WriteToolInputSchema).properties.path,
+            type: "string",
             description: "File path to write",
           },
           content: {
-            ...zodToJsonSchema(WriteToolInputSchema).properties.content,
+            type: "string",
             description: "Complete file content to write",
           },
           createParentDir: {
-            ...zodToJsonSchema(WriteToolInputSchema).properties.createParentDir,
+            type: "boolean",
+            default: false,
             description: "Create parent directories if they don't exist (default: false)",
           },
         },
+        required: ["path", "content"],
       },
     };
   }

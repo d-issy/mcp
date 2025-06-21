@@ -9,31 +9,33 @@ export class FindTool {
   }
 
   getDefinition(): Tool {
+    const baseSchema = zodToJsonSchema(FindToolInputSchema);
     return {
       name: "find",
       description: "Find files and directories with pattern matching and filtering",
       inputSchema: {
-        ...zodToJsonSchema(FindToolInputSchema),
+        type: "object",
         properties: {
-          ...zodToJsonSchema(FindToolInputSchema).properties,
           path: {
-            ...zodToJsonSchema(FindToolInputSchema).properties.path,
+            type: "string",
             description: "Directory path to search (required)",
           },
+          pattern: {
+            type: "string",
+            description: "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
+          },
           depth: {
-            ...zodToJsonSchema(FindToolInputSchema).properties.depth,
+            type: "number",
+            default: 0,
             description: "Maximum depth to recurse (default: 0 = unlimited)",
           },
           includeIgnored: {
-            ...zodToJsonSchema(FindToolInputSchema).properties.includeIgnored,
+            type: "boolean",
+            default: false,
             description: "Include files ignored by .gitignore (default: false)",
           },
-          pattern: {
-            ...zodToJsonSchema(FindToolInputSchema).properties.pattern,
-            description:
-              "File pattern to match (*.js,**/*.test.ts,!**/node_modules/**). Use ! to exclude, comma-separated",
-          },
         },
+        required: ["path"],
       },
     };
   }

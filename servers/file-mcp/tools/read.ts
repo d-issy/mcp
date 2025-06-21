@@ -14,26 +14,28 @@ export class ReadTool {
       name: "read",
       description: "Read file contents with safety checks and optional line range",
       inputSchema: {
-        ...zodToJsonSchema(ReadToolInputSchema),
+        type: "object",
         properties: {
-          ...zodToJsonSchema(ReadToolInputSchema).properties,
           path: {
-            ...zodToJsonSchema(ReadToolInputSchema).properties.path,
+            type: "string",
             description: "File path to read",
           },
           startLine: {
-            ...zodToJsonSchema(ReadToolInputSchema).properties.startLine,
+            type: "number",
+            default: 1,
             description: "Start line number (1-based, default: 1)",
           },
           endLine: {
-            ...zodToJsonSchema(ReadToolInputSchema).properties.endLine,
+            type: "number",
             description: "End line number (1-based, optional)",
           },
           maxLines: {
-            ...zodToJsonSchema(ReadToolInputSchema).properties.maxLines,
+            type: "number",
+            default: 20,
             description: "Maximum number of lines to read (default: 20)",
           },
         },
+        required: ["path"],
       },
     };
   }
