@@ -171,7 +171,7 @@ The project uses GitHub releases for deployment:
 
 2. **Production**: Use version tags for stability
    ```json
-   "args": ["-y", "github:d-issy/mcp#v0.1.0", "server-name"]
+   "args": ["-y", "github:d-issy/mcp#v0.1.1", "server-name"]
    ```
 
 ## Common Tasks

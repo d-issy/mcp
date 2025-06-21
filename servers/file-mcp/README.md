@@ -12,7 +12,7 @@ Add to your MCP client configuration:
     "file": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:d-issy/mcp#v0.1.0", "file-mcp"]
+      "args": ["-y", "github:d-issy/mcp#v0.1.1", "file-mcp"]
     }
   }
 }
@@ -26,7 +26,7 @@ You can specify a particular version, branch, or commit:
 
 ```json
 // Latest release (recommended for production)
-"args": ["-y", "github:d-issy/mcp#v0.1.0", "file-mcp"]
+"args": ["-y", "github:d-issy/mcp#v0.1.1", "file-mcp"]
 
 // Specific branch (for development)
 "args": ["-y", "github:d-issy/mcp#main", "file-mcp"]
