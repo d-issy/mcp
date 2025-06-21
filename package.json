@@ -7,6 +7,11 @@
   "bin": {
     "file-mcp": "bin/file-mcp"
   },
+  "files": [
+    "dist/",
+    "bin/",
+    "servers/"
+  ],
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
