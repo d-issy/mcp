@@ -2,7 +2,21 @@
   "packages": {
     ".": {
       "release-type": "node",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "README.md"
+        },
+        {
+          "type": "generic",
+          "path": "servers/file-mcp/README.md"
+        },
+        {
+          "type": "generic",
+          "path": "CLAUDE.md"
+        }
+      ]
     }
   }
 }
