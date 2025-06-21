@@ -121,10 +121,15 @@ export function zodToJsonSchema(schema: z.ZodTypeAny): any {
     const required: string[] = [];
 
     for (const [key, value] of Object.entries(shape)) {
-      properties[key] = zodToJsonSchema(value as z.ZodTypeAny);
+      const fieldSchema = value as z.ZodTypeAny;
+      properties[key] = zodToJsonSchema(fieldSchema);
 
-      // Check if field is required (not optional and no default)
-      if (!(value as any).isOptional() && !(value as any)._def.defaultValue) {
+      // Check if field is required by attempting to parse undefined
+      try {
+        fieldSchema.parse(undefined);
+        // If this succeeds, the field is optional or has a default
+      } catch {
+        // If this fails, the field is required
         required.push(key);
       }
     }
