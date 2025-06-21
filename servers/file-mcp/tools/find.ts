@@ -1,7 +1,7 @@
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { DirectoryUtils } from "../lib/directory-utils.js";
-import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 import { FindToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
+import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 
 export class FindTool {
   getName(): string {
@@ -9,7 +9,7 @@ export class FindTool {
   }
 
   getDefinition(): Tool {
-    const baseSchema = zodToJsonSchema(FindToolInputSchema);
+    const _baseSchema = zodToJsonSchema(FindToolInputSchema);
     return {
       name: "find",
       description: "Find files and directories with pattern matching and filtering",

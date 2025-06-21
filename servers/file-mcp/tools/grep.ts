@@ -2,8 +2,8 @@ import { relative } from "node:path";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { DirectoryUtils } from "../lib/directory-utils.js";
 import { FileUtils } from "../lib/file-utils.js";
-import { ResultFormatter, TOOL_CONSTANTS, ToolError } from "../lib/tool-utils.js";
 import { GrepToolInputSchema } from "../lib/schemas.js";
+import { ResultFormatter, TOOL_CONSTANTS, ToolError } from "../lib/tool-utils.js";
 
 interface GrepMatch {
   lineNumber: number;

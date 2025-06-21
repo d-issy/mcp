@@ -2,8 +2,8 @@ import { access, copyFile, mkdir, stat } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { PathSecurity } from "../lib/path-security.js";
-import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 import { CopyToolInputSchema } from "../lib/schemas.js";
+import { ResultFormatter, ToolError } from "../lib/tool-utils.js";
 
 export class CopyTool {
   getName(): string {
