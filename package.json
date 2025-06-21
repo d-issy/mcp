@@ -1,6 +1,6 @@
 {
   "name": "mcp-collection",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A collection of Model Context Protocol (MCP) servers providing various tools and capabilities",
   "type": "module",
   "private": false,

@@ -12,7 +12,7 @@ Add to your MCP client configuration:
     "file": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:d-issy/mcp#v0.1.2", "file-mcp"] <!-- x-release-please-version -->
+      "args": ["-y", "github:d-issy/mcp#v0.2.0", "file-mcp"] <!-- x-release-please-version -->
     }
   }
 }
