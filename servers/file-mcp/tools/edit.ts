@@ -1,9 +1,10 @@
 import { access, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { type Tool } from "@modelcontextprotocol/sdk/types.js";
+import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { PathSecurity } from "../lib/path-security.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
+import { EditToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 interface MatchInfo {
   index: number;
@@ -84,18 +85,19 @@ export class EditTool {
   }
 
   async execute(args: any): Promise<any> {
-    const { path: filePath, edits } = args;
+    try {
+      // Validate and parse input using Zod schema
+      const validatedArgs = EditToolInputSchema.parse(args);
+      const { path: filePath, edits } = validatedArgs;
 
-    // Validate edits array
-    if (!edits || !Array.isArray(edits) || edits.length === 0) {
-      throw ToolError.createValidationError(
-        "edits",
-        edits,
-        "array is required and must contain at least one operation"
-      );
+      return await this.handleBatchEdit(filePath, edits);
+    } catch (error) {
+      // Handle Zod validation errors
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
+      }
+      throw error;
     }
-
-    return await this.handleBatchEdit(filePath, edits);
   }
 
   private async handleReplace(

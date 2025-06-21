@@ -3,6 +3,7 @@ import { dirname, resolve } from "node:path";
 import type { Tool } from "@modelcontextprotocol/sdk/types.js";
 import { fileReadTracker } from "../lib/file-read-tracker.js";
 import { ResultFormatter, ToolError, ToolValidation } from "../lib/tool-utils.js";
+import { WriteToolInputSchema, zodToJsonSchema } from "../lib/schemas.js";
 
 export class WriteTool {
   getName(): string {
@@ -26,8 +27,8 @@ export class WriteTool {
           },
           createParentDir: {
             type: "boolean",
-            description: "Create parent directories if they don't exist (default: false)",
             default: false,
+            description: "Create parent directories if they don't exist (default: false)",
           },
         },
         required: ["path", "content"],
@@ -36,9 +37,11 @@ export class WriteTool {
   }
 
   async execute(args: any): Promise<any> {
-    const { path: filePath, content, createParentDir = false } = args;
-
     try {
+      // Validate and parse input using Zod schema
+      const validatedArgs = WriteToolInputSchema.parse(args);
+      const { path: filePath, content, createParentDir } = validatedArgs;
+
       const resolvedPath = resolve(filePath);
 
       // Security validation
@@ -58,15 +61,6 @@ export class WriteTool {
           "filePath",
           filePath,
           `File must be read first. Use read(path="${filePath}") before overwriting to ensure safety`
-        );
-      }
-
-      // Validate content
-      if (!content) {
-        throw ToolError.createValidationError(
-          "content",
-          content,
-          'content is required for write operation.\nExample: write(path="file.js", content="file content")'
         );
       }
 
@@ -91,6 +85,10 @@ export class WriteTool {
 
       return ResultFormatter.createResponse(resultDisplay);
     } catch (error: any) {
+      // Handle Zod validation errors
+      if (error instanceof Error && error.name === "ZodError") {
+        throw ToolError.createValidationError("input", args, `Invalid input: ${error.message}`);
+      }
       throw ToolError.wrapError("Write operation", error);
     }
   }
