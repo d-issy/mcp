@@ -5,8 +5,11 @@
   "type": "module",
   "private": false,
   "workspaces": [
-    "servers/*"
+    "servers/file-mcp"
   ],
+  "bin": {
+    "file-mcp": "servers/file-mcp/dist/index.js"
+  },
   "scripts": {
     "build": "npm run build --workspaces",
     "dev": "npm run dev --workspaces",
