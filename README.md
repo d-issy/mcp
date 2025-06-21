@@ -2,6 +2,8 @@
 
 A collection of Model Context Protocol (MCP) servers providing various tools and capabilities.
 
+**Current Version:** v0.1.2
+
 ## Available Servers
 
 | Server | Description | Documentation |
