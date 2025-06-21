@@ -1,57 +1,65 @@
 # Release Guide
 
-This document explains how releases are managed in this repository using Release Please automation.
+This document explains how releases are managed in this repository using Release Please automation with label-based version control.
 
 ## Release Automation
 
-This repository uses [Release Please](https://github.com/googleapis/release-please) to automate the release process. Releases are triggered automatically based on conventional commit messages.
+This repository uses [Release Please](https://github.com/googleapis/release-please) to automate the release process. Version bumps are controlled by pull request labels rather than conventional commits.
 
-## Conventional Commits
-
-Use conventional commit format to control version bumping:
+## Label-Based Version Control
 
 ### Version Bumping Rules
 
-| Commit Type | Example | Version Impact |
-|-------------|---------|----------------|
-| `fix:` | `fix: resolve file reading issue` | **Patch** (0.1.2 → 0.1.3) |
-| `feat:` | `feat: add new file operation` | **Minor** (0.1.2 → 0.2.0) |
-| `feat!:` or `BREAKING CHANGE:` | `feat!: change API signature` | **Major** (0.1.2 → 1.0.0) |
+Version bumps are determined by pull request labels:
 
-### Other Commit Types
+| PR Label | Example | Version Impact |
+|----------|---------|----------------|
+| `minor` or `feature` | PR labeled with "minor" or "feature" | **Minor** (0.1.2 → 0.2.0) |
+| `major` | PR labeled with "major" | **Major** (0.1.2 → 1.0.0) |
+| No label (default) | PR without version labels | **Patch** (0.1.2 → 0.1.3) |
 
-- `chore:` - No version bump
-- `docs:` - No version bump  
-- `style:` - No version bump
-- `refactor:` - No version bump
-- `test:` - No version bump
+**Key Points:**
+- **Default behavior**: All PRs create patch version bumps
+- **Minor bumps**: Add `minor` or `feature` label to the PR
+- **Major bumps**: Add `major` label to the PR
+- **No conventional commits required**: Any commit format works
 
 ## Release Process
 
-### 1. Automatic Release PR Creation
+### 1. Create Feature PR with Labels
 
-When commits are pushed to the `main` branch, Release Please automatically:
+When creating a pull request:
 
-1. Analyzes commits since the last release
-2. Determines the appropriate version bump
-3. Creates a release pull request with:
+1. Choose appropriate label based on change type:
+   - No label = patch version (bug fixes, small improvements)
+   - `minor` or `feature` = minor version (new features)
+   - `major` = major version (breaking changes)
+
+### 2. Automatic Version Bump Handling
+
+When a PR is merged to `main`:
+
+1. **Version Bump Workflow** checks PR labels
+2. For non-patch bumps, creates a Release-As commit
+3. **Release Please Workflow** detects the commit and version bump
+4. Creates a release pull request with:
    - Updated `package.json` version
    - Generated `CHANGELOG.md` entries
    - Updated version references in documentation
 
-### 2. Review and Merge
+### 3. Review and Merge Release PR
 
 1. Review the generated release PR
 2. Verify the changelog entries
 3. Merge the PR when ready to release
 
-### 3. Automatic Release Creation
+### 4. Automatic Tag Creation
 
 After merging the release PR, Release Please automatically:
 
 1. Creates a Git tag (e.g., `v0.1.3`)
-2. Creates a GitHub release with changelog
-3. Runs build and tests
+2. Runs build and tests
+3. **No GitHub release created** (tags only)
 
 ## Manual Version Override
 
@@ -75,48 +83,29 @@ The following files have their version references updated automatically:
 
 ## Best Practices
 
+### PR Labeling
+
+```bash
+# For new features (minor version bump)
+Add label: "minor" or "feature"
+
+# For breaking changes (major version bump)  
+Add label: "major"
+
+# For bug fixes, docs, refactoring (patch version bump)
+No label needed (default behavior)
+```
+
 ### Commit Messages
 
+Since version control is label-based, any commit format works:
+
 ```bash
-# Good examples
-git commit -m "feat: add copy operation to file server"
+# All of these are acceptable
+git commit -m "add copy operation to file server"
 git commit -m "fix: handle permission errors gracefully"  
-git commit -m "feat!: change configuration format"
-
-# Poor examples  
-git commit -m "update code"
-git commit -m "fixes"
-git commit -m "WIP"
-```
-
-### Breaking Changes
-
-For breaking changes, use either:
-
-```bash
-# Option 1: Use ! suffix
-git commit -m "feat!: change API signature"
-
-# Option 2: Use footer
-git commit -m "feat: change API signature
-
-BREAKING CHANGE: The API now requires authentication headers"
-```
-
-### Multiple Changes in One Commit
-
-Use footers for multiple distinct changes:
-
-```
-feat: add new authentication system
-
-This commit adds support for multiple auth providers.
-
-fix(auth): resolve token validation issue
-  Fixes token expiration handling
-  
-feat(auth): add OAuth2 support
-  Adds support for OAuth2 authentication flow
+git commit -m "update documentation"
+git commit -m "refactor code structure"
 ```
 
 ## Release Schedule
@@ -129,14 +118,14 @@ feat(auth): add OAuth2 support
 
 ### Release PR Not Created
 
-1. Ensure commits follow conventional commit format
-2. Check that commits contain actual changes worth releasing
-3. Verify the Release Please workflow is enabled
+1. Check that commits contain actual changes worth releasing
+2. Verify the Release Please workflow is enabled
+3. Ensure the merged PR had appropriate labels if non-patch bump was expected
 
 ### Incorrect Version Bump
 
-1. Review commit messages for correct prefixes
-2. Use `Release-As:` footer to override version
+1. Review PR labels for correct version bump type
+2. Use `Release-As:` footer to override version in commit message
 3. Edit the release PR manually if needed
 
 ### Failed Release

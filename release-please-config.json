@@ -4,6 +4,7 @@
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",
       "skip-github-release": true,
+      "versioning-strategy": "always-bump-patch",
       "extra-files": [
         {
           "type": "generic",
